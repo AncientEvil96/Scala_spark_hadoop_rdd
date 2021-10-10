@@ -6,15 +6,18 @@ object WordCount {
     val output = args(1)
     val sc = new SparkContext()
     sc.textFile(input)
-      .flatMap(line => line.split("\\s"))
+      .flatMap(line => line.trim().replaceAll("[^a-zA-Z ]", "").toLowerCase().split("\\s"))
       .map(word => (word, 1))
       .reduceByKey(_ + _) // .reduceByKey((x, y) => x + y)
       .sortBy { case (word, count) => count } // .sortBy(_._2) or .sortBy(pair => pair._2)
+      .map{case (word, count) => s"$word\t$count"}
       .saveAsTextFile(output)
     sc.stop()
   }
 }
 
+
+//.toString.trim().replaceAll("[^a-zA-Z ]", "").toLowerCase().split("\\s")
 
 //sbt package
 
